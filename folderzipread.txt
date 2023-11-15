@@ -1,0 +1,67 @@
+import React, { useState, useCallback } from "react";
+import axios from "axios";
+import { useDropzone } from "react-dropzone";
+
+function FolderUpload() {
+  const [selectedFiles, setSelectedFiles] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState(null);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    setSelectedFiles(acceptedFiles);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: ".zip" });
+
+  const handleUpload = () => {
+    if (!selectedFiles || selectedFiles.length !== 1) {
+      setUploadStatus("Please select a zip file or drop a zip file onto the designated area.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("zipFile", selectedFiles[0]);
+
+    axios.post("http://localhost:8080/upload", formData)
+      .then(response => {
+        setUploadStatus("Upload successful!");
+        console.log(response.data);
+      })
+      .catch(error => {
+        setUploadStatus("Upload failed. Please try again.");
+        console.error(error);
+      });
+  };
+
+  return (
+    <div>
+      <h1>Zip File Upload</h1>
+      <div
+        {...getRootProps()}
+        style={{
+          border: `2px dashed ${isDragActive ? "blue" : "#ccc"}`,
+          padding: "20px",
+          margin: "20px",
+          cursor: "pointer",
+        }}
+      >
+        <input {...getInputProps()} />
+        <p>{isDragActive ? "Drop the zip file here..." : "Drag and drop a zip file here, or click to select a zip file"}</p>
+      </div>
+      <button onClick={handleUpload}>Upload</button>
+      {uploadStatus && (
+        <div>
+          <h2>Status:</h2>
+          <p>{uploadStatus}</p>
+        </div>
+      )}
+      {selectedFiles && (
+        <div>
+          <h2>Selected Zip File:</h2>
+          <p>{selectedFiles[0].name}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default FolderUpload;

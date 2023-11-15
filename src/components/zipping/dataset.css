@@ -1,0 +1,177 @@
+.main-dataset {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 100px;
+}
+
+.box-dataset {
+    display: flex;
+    width: 300px;
+    height: 50px;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    transition: 1s;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, rgb(26, 16, 82), rgb(49, 7, 66), rgb(71, 2, 2));
+    background-size: 200% auto;
+    box-shadow: 0px 2px 4px 0px black;
+}
+
+#dataset-exist {
+    color: black;
+}
+
+.box-dataset:hover {
+    background-position: right center;
+    box-shadow: 1px 3px 8px 4px black;
+}
+
+
+.no-file p {
+    color: white;
+}
+
+.chosen-file p {
+    color: white;
+}
+
+.file-exist {
+    width:280px;
+    height: 48px;
+    padding-left: 10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+.no-file {
+    width:280px;
+    height: 48px;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.label-upload {
+    margin: 10px 2px 2px 2px;
+    display: flex;
+    transition: 1s;
+    justify-content: center;
+
+}
+
+.chosen-file {
+    cursor: pointer;
+}
+
+.no-file {
+    display: flex;
+    padding-top: 2px;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.butn {
+    cursor: pointer;
+    text-align: center;
+    padding: 5px 20px 5px 20px;
+    transition: 1s;
+    background-size: 200% auto;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0px 2px 4px 0px black;
+    background-image: linear-gradient(to right, rgb(11,43,99) 0%, #4623e0 50%, rgb(91, 2, 109) 100%);
+}
+
+.butn:hover {
+    background-position: right center;
+    box-shadow: 1px 3px 10px 1px black;
+}
+
+label {
+    font-size: 0.76rem;
+}
+
+.typing-animation{
+    display: inline-flex;
+    border-radius: 50px;
+    margin: 0px auto;
+}
+.typing-animation .dot1{
+    height: 10px;
+    width: 10px;
+    opacity: 1;
+    margin: 0 3px;
+    border-radius: 50%;
+    background: #110a0a;
+    animation: animateDots 1.8s 200ms ease-in-out infinite;
+}
+
+.typing-animation .dot2{
+    height: 10px;
+    width: 10px;
+    opacity: 1;
+    margin: 0 3px;
+    border-radius: 50%;
+    background: #110a0a;
+    animation: animateDots 1.8s 300ms ease-in-out infinite;
+}
+
+.typing-animation .dot3{
+    height: 10px;
+    width: 10px;
+    opacity: 1;
+    margin: 0 3px;
+    border-radius: 50%;
+    background: #110a0a;
+    animation: animateDots 1.8s 400ms ease-in-out infinite;
+}
+
+.loading-style {
+    margin: 20px 0 20px 0;
+    width: 60px;
+    height: 10px;
+}
+
+@keyframes animateDots {
+    0% {
+        opacity: 0.7;
+        transform: translate(0px, 0px);
+    }
+    10% {
+        opacity: 0.6;
+        transform: translate(2px, -3px);
+    }
+    20% {
+        opacity: 0.5;
+        transform: translate(5px, -5px);
+    }
+    30% {
+        opacity: 0.4;
+        transform: translate(8px, -3px);
+    }
+    40% {
+        opacity: 0.3;
+        transform: translate(10px, 0px);
+    }
+    50% {
+        opacity: 0.4;
+        transform: translate(8px, 3px);
+    }
+    60% {
+        opacity: 0.5;
+        transform: translate(5px, 5px);
+    }
+    70% {
+        opacity: 0.6;
+        transform: translate(2px, 3px);
+    }
+    80% {
+        opacity: 0.7;
+        transform: translate(0px, 0px);
+    }
+}

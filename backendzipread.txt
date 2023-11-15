@@ -1,0 +1,95 @@
+package main
+
+import (
+	"archive/zip"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"} // Sesuaikan dengan alamat React Anda
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	r.Use(cors.New(config))
+	r.POST("/upload", func(c *gin.Context) {
+		zipFile, err := c.FormFile("zipFile")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Create a temporary directory to extract files
+		tempDir := "./temp"
+		err = os.MkdirAll(tempDir, os.ModePerm)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer os.RemoveAll(tempDir)
+
+		// Save the uploaded zip file
+		zipPath := filepath.Join(tempDir, zipFile.Filename)
+		err = c.SaveUploadedFile(zipFile, zipPath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Extract files from the zip
+		destFolder := filepath.Join(".", "assets", "dataset")
+		err = unzip(zipPath, destFolder)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Files uploaded and extracted successfully"})
+	})
+
+	r.Run(":8080")
+}
+
+func unzip(src, dest string) error {
+	reader, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer reader.Close()
+
+	for _, file := range reader.File {
+		targetFile := filepath.Join(dest, file.Name)
+
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(targetFile, os.ModePerm)
+			continue
+		}
+
+		if err := os.MkdirAll(filepath.Dir(targetFile), os.ModePerm); err != nil {
+			return err
+		}
+
+		sourceFile, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer sourceFile.Close()
+
+		newFile, err := os.Create(targetFile)
+		if err != nil {
+			return err
+		}
+		defer newFile.Close()
+
+		if _, err := io.Copy(newFile, sourceFile); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
