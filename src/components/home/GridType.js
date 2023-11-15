@@ -13,6 +13,7 @@ export default function Search(){
       setSelectedImage(URL.createObjectURL(file));
       setSelectedFileName(file.name);
     }
+    console
   };
 
   const handleUploadClick = () => {

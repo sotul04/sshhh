@@ -1,4 +1,4 @@
-package colorcbir
+package cbir
 
 import (
 	"encoding/json"

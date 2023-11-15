@@ -2,7 +2,7 @@ package main
 
 import (
 	"archive/zip"
-	colorcbir "backend/colorcbir"
+	cbir "backend/cbir"
 	"io"
 	"net/http"
 	"os"
@@ -41,7 +41,7 @@ func handleFileUpload(c *gin.Context) {
 		return
 	}
 
-	colorcbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
+	cbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 }
@@ -108,7 +108,7 @@ func handleZip(c *gin.Context) {
 	}
 
 	//Ekstraksi Vektor untuk color dari gambar
-	colorcbir.PreproccessImageColor("../assets", "../dataset_vector/color.json")
+	cbir.PreproccessImageColor("../assets", "../dataset_vector/color.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 }
