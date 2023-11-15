@@ -6,12 +6,14 @@ export default function Search(){
   const [selectedImage, setSelectedImage] = useState(null);
   var isChecked = "color";
   const [selectedFileName, setSelectedFileName] = useState(null);
+  const [image, setImage] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
       setSelectedImage(URL.createObjectURL(file));
       setSelectedFileName(file.name);
+      setImage(file)
     }
     console
   };
@@ -20,7 +22,8 @@ export default function Search(){
     // Logika untuk mengunggah gambar ke server dapat ditambahkan di sini
     // Misalnya, menggunakan FormData dan mengirimkan permintaan HTTP.
     // Tambahkan logika pengunggahan sesuai kebutuhan proyek Anda.
-    console.log('Upload clicked');
+
+    console.log('Search clicked');
   };
 
   const handleRemoveClick = () => {
