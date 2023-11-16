@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './gstyle.css'
+import ImageUploader from '../Pagination';
 
 export default function Search(){
 
@@ -15,7 +16,6 @@ export default function Search(){
       setSelectedFileName(file.name);
       setImage(file)
     }
-    console
   };
 
   const handleUploadClick = () => {
@@ -103,6 +103,7 @@ export default function Search(){
           </div>
         </div>
       </div>
+      <ImageUploader />
     </div>
   );
 }
