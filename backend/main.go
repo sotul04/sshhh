@@ -2,12 +2,11 @@ package main
 
 import (
 	"archive/zip"
-	cbir "backend/cbir"
+	"backend/cbir"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-
 	"fmt"
 
 	"github.com/gin-contrib/cors"
@@ -16,13 +15,35 @@ import (
 
 func main() {
 	r := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
-	r.Use(cors.New(config))
+	r.Use(cors.Default())
 	r.POST("/upload-zip", handleZip)
 	r.POST("/search", handleFileUpload)
+	r.POST("/search/texture",handleTexture)
 	r.Run(":8080")
+}
+
+func handleTexture(c *gin.Context){
+	file,err := c.FormFile("file")
+	if err!= nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Unable to save file on server"})
+		return
+	}
+	filename := filepath.Join("../image",file.Filename)
+	if err:= c.SaveUploadedFile(file,filename); err!=nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Unable to save file on server"})
+		return
+	}
+
+	sim,countData := cbir.TextureSimilarity(filename,"../dataset_vector/texture.json")
+	for _,val := range sim{
+		fp := filepath.Join("../../asset",val.URL)
+		val.URL = fp
+		val.Similarity *= 100
+	}
+	c.JSON(http.StatusOK,gin.H{
+		"array":sim,
+		"jmlh-data":countData,
+	})
 }
 
 func handleFileUpload(c *gin.Context) {
@@ -109,6 +130,7 @@ func handleZip(c *gin.Context) {
 
 	//Ekstraksi Vektor untuk color dari gambar
 	cbir.PreproccessImageColor("../assets", "../dataset_vector/color.json")
+	cbir.MakeJSONDataset("../assets","../dataset_vector/texture.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 }
