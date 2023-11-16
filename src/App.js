@@ -28,7 +28,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<Home />} />
-          <Route path="/kontol" element={<UploadImage />} />
         </Routes>
       </Router>
   );

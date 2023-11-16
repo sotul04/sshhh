@@ -290,6 +290,8 @@ func SearchImageColor(imageSearched string, binsFile string, targetFile string) 
 			wg.Wait()
 			close(resultChan)
 			for res := range resultChan {
+				res.Path = filepath.Base(res.Path)
+				res.Path = "dataset/" + res.Path
 				tempFoundImage = append(tempFoundImage, res)
 			}
 			resultChan = make(chan tuplePercentage, maxProccess)

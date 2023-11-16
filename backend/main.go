@@ -33,7 +33,7 @@ func handleSearchColor(c *gin.Context) {
 	}
 
 	// Generate a unique filename for the uploaded file
-	fileName := fmt.Sprintf("%s%s", filepath.Base(file.Filename), filepath.Ext(file.Filename))
+	fileName := filepath.Base(file.Filename)
 	dst := filepath.Join("../image", fileName)
 
 	if err := c.SaveUploadedFile(file, dst); err != nil {
@@ -92,13 +92,13 @@ func handleZip(c *gin.Context) {
 		return
 	}
 
-	err = os.RemoveAll("../assets/")
+	err = os.RemoveAll("../public/dataset")
 	if err != nil {
 		c.JSON(http.StatusAlreadyReported, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = extractFiles("../temp/dataset.zip", "../assets")
+	err = extractFiles("../temp/dataset.zip", "../public/dataset")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -114,7 +114,7 @@ func handleZip(c *gin.Context) {
 	}
 
 	//Ekstraksi Vektor untuk color dari gambar
-	cbir.PreproccessImageColor("../assets", "../dataset_vector/color.json")
+	cbir.PreproccessImageColor("../public/dataset", "../dataset_vector/color.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 }
