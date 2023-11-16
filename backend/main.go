@@ -21,11 +21,11 @@ func main() {
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 	r.Use(cors.New(config))
 	r.POST("/upload-zip", handleZip)
-	r.POST("/search", handleFileUpload)
+	r.POST("/search-color", handleSearchColor)
 	r.Run(":8080")
 }
 
-func handleFileUpload(c *gin.Context) {
+func handleSearchColor(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error uploading file"})
@@ -41,9 +41,15 @@ func handleFileUpload(c *gin.Context) {
 		return
 	}
 
-	cbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
+	info := cbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
+	fmt.Println(len(info))
 
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+	responseData := gin.H{
+		"length": len(info),
+		"data":   info,
+	}
+
+	c.JSON(http.StatusOK, responseData)
 }
 
 func handleZip(c *gin.Context) {

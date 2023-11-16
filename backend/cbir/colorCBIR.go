@@ -273,7 +273,7 @@ func (a ByPercentage) Len() int           { return len(a) }
 func (a ByPercentage) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByPercentage) Less(i, j int) bool { return a[i].Percentage > a[j].Percentage }
 
-func SearchImageColor(imageSearched string, binsFile string, targetFile string) {
+func SearchImageColor(imageSearched string, binsFile string, targetFile string) []tuplePercentage {
 	runtime.GOMAXPROCS(11)
 	mainVector := CalculateSingleVector(imageSearched)
 	dataVector := ExtractColorVector(binsFile)
@@ -305,11 +305,12 @@ func SearchImageColor(imageSearched string, binsFile string, targetFile string) 
 	sort.Sort(ByPercentage(finalImage))
 
 	fmt.Println("Banyak gambar yang ditemukan:", len(finalImage))
+	var nullImage []tuplePercentage
 
 	file, err := os.Create(targetFile)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
-		return
+		return nullImage
 	}
 	defer file.Close()
 
@@ -318,9 +319,10 @@ func SearchImageColor(imageSearched string, binsFile string, targetFile string) 
 	err = encoder.Encode(finalImage)
 	if err != nil {
 		fmt.Println("Error encoding JSON:", err)
-		return
+		return nullImage
 	}
 	fmt.Printf("Data written to %v\n", targetFile)
+	return finalImage
 }
 
 func CosineSimiliarity(bins1 [16][72]int32, data Vektor, resultChan chan tuplePercentage, wg *sync.WaitGroup) {

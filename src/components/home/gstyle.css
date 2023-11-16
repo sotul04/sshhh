@@ -184,6 +184,12 @@ input:checked + .slider:before {
     justify-content: end;
 }
 
+.temp-search {
+    width: 160px;
+    display: flex;
+
+}
+
 .top-input {
     display: flex;
     justify-content: space-between;

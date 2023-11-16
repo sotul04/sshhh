@@ -1,44 +1,87 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import Swal from "sweetalert";
 import './gstyle.css'
 
 export default function Search(){
 
   const [selectedImage, setSelectedImage] = useState(null);
-  var isChecked = "color";
   const [selectedFileName, setSelectedFileName] = useState(null);
+  const [typeSearch, setTypeSearch] = useState(false);
   const [image, setImage] = useState(null);
+  const [waiting, setWaiting] = useState(false);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files && e.target.files[0];
+  const handleChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
       setSelectedImage(URL.createObjectURL(file));
       setSelectedFileName(file.name);
-      setImage(file)
+      setImage(file);
     }
-    console
+    console.log(image, " has been loaded.");
   };
 
-  const handleUploadClick = () => {
-    // Logika untuk mengunggah gambar ke server dapat ditambahkan di sini
-    // Misalnya, menggunakan FormData dan mengirimkan permintaan HTTP.
-    // Tambahkan logika pengunggahan sesuai kebutuhan proyek Anda.
-
+  const handleSearch = async () => {
     console.log('Search clicked');
+    if (!image) {
+      Swal('Tidak Ada Image yang Diinput.');
+      return;
+    }
+    const starttime = performance.now();
+    const formData = new FormData();
+    formData.append('file', image);
+  
+    console.log(formData);
+    var searchType = typeSearch ? 'http://localhost:8080/search-texture' : 'http://localhost:8080/search-color';
+    
+    setWaiting(true);
+
+    try {
+      const response = await fetch(searchType, {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+
+        const length = data.length;
+        console.log('Panjang:', length);
+       // Swal("Berhasil mengupload file.Jumlah gambar ditemukan:",length);
+        const endTime = performance.now();
+        var temp = endTime-starttime;
+        temp = temp/1000;
+        if (temp < 0){
+          temp = 0;
+        }
+        temp = temp.toFixed(2);
+        const lengthData = "Menemukan "+length+" image dalam waktu "+temp+"s.";
+        Swal(lengthData);
+        const responseData = data.data;
+        console.log('Data:', responseData);
+      })
+    } catch (error) {
+      console.error('Error uploading file', error);
+      Swal(error.message || 'Error uploading file');
+    } finally {
+      console.log('Berhasil');
+      setWaiting(false);
+    }
   };
 
   const handleRemoveClick = () => {
     setSelectedImage(null);
     setSelectedFileName(null);
+    setImage(null);
   };
 
-  const handleCheckboxChange = (e) => {
-    console.log("Before: ",isChecked)
-    if (isChecked === "color"){
-      isChecked = "texture"
-    } else {
-      isChecked = "color" 
-    }
-    console.log("After: ",isChecked)
+  useEffect(() => {
+    console.log('Selected Image:', selectedImage);
+  }, [selectedImage]);
+
+  const handleCheckboxChange = () => {
+    console.log("Before: ",typeSearch)
+    var temp = typeSearch;
+    setTypeSearch(!temp);
+    console.log("After: ", typeSearch);
     // Jika Anda ingin menyimpan nilai 0 atau 1 dalam variabel terpisah, Anda dapat menambahkan logika berikut:
     // const valueToSave = e.target.checked ? 1 : 0;
     // Simpan valueToSave sesuai kebutuhan Anda.
@@ -78,7 +121,7 @@ export default function Search(){
               type="file"
               id="fileInput"
               accept="image/*"
-              onChange={handleImageChange}
+              onChange={handleChange}
               style={{ display: 'none' }}
             />
             {
@@ -96,10 +139,20 @@ export default function Search(){
               </label>
               <p>Texture</p>
             </div>
-            <label htmlFor="search" className='btn search'>
-              Search
-            </label>
-              <button id= "search" onClick={handleUploadClick} style={{display: 'none'}}></button>
+            {
+              waiting ? (
+                  <label className='btn search'>
+                    Search
+                  </label>
+              ) : (
+                <div className='temp-search'>
+                  <label htmlFor="search" className='btn search'>
+                    Search
+                  </label>
+                    <button id= "search" onClick={handleSearch} style={{display: 'none'}}></button>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>
