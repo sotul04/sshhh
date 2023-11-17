@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import JSZip from 'jszip';
+import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import "./dataset.css"
 import Swal from 'sweetalert';
@@ -22,7 +23,6 @@ const FileUploadForm = () => {
       console.error('No files selected.');
       return;
     }
-    setDiffTime(false);
     const startTime = performance.now();
   
     const zip = new JSZip();
@@ -40,17 +40,14 @@ const FileUploadForm = () => {
       const formData = new FormData();
       formData.append('zipFile', content);
   
-      const response = await fetch('http://localhost:8080/upload-zip', {
-        method: 'POST',
-        body: formData,
-      });
+      // Use Axios instead of fetch
+      const response = await axios.post('http://localhost:8080/upload-zip', formData);
   
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.data) {
+        throw new Error('Empty response');
       }
   
-      const responseData = await response.json();
-      console.log(responseData);
+      console.log(response.data);
       Swal("Upload Data Set berhasil."); // Handle the response accordingly
     } catch (error) {
       console.error('Error uploading and zipping files', error);
@@ -65,14 +62,15 @@ const FileUploadForm = () => {
         temp2 = 0;
       }
       setSecondTime(temp2);
-    };
+    }
   };
+  
   
   return (
     <div className='main-dataset'>
       <div className='box-dataset'>
         {!loading && (
-        <div div {...getRootProps()} className='box-input' disabled={loading}>
+        <div {...getRootProps()} className='box-input' disabled={loading}>
           <input {...getInputProps()} className='input-dataset' disabled={loading}/>
           <div>
             {

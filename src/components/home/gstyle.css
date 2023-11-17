@@ -253,6 +253,7 @@ input:checked + .slider:before {
 
 .parent-container {
     padding-left: 30px;
+    padding-right: 20px;
     height: auto;
     width: 100%;
     display: flex;
@@ -264,7 +265,30 @@ input:checked + .slider:before {
     display: flex;
     flex-wrap: wrap;
     transition: 0.5s;
-    width: fit-content;
+}
+
+@media (max-width: 489px) {
+    .grid-container {
+        width: 250px;
+    }
+}
+
+@media (max-width: 734px) {
+    .grid-container {
+        width: 500px;
+    }
+}
+
+@media (max-width: 979px) {
+    .grid-container {
+        width: 740px;
+    }
+}
+
+@media (max-width: 100vw) {
+    .grid-container {
+        width: 990px;
+    }
 }
 
 .all-container {
