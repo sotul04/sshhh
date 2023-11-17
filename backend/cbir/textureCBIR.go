@@ -60,42 +60,51 @@ func ListFiles(root string) ([]os.DirEntry, error) {
 	return files, nil
 }
 
-func MakeJSONDataset(root,dest string) {
-	files, err := ListFiles(root)
-	if err != nil {
-		fmt.Printf("error listing files in directory %v: %v\n", root, err)
-		return
-	}
+func MakeJSONDataset(root, dest string) {
+    files, err := ListFiles(root)
+    if err != nil {
+        fmt.Printf("error listing files in directory %v: %v\n", root, err)
+        return
+    }
 
     var wg sync.WaitGroup
     var mu sync.Mutex
-
-	for _, entry := range files {
-		fp := filepath.Join(root, entry.Name())
-        wg.Add(1)
-        go func(fp string){
-            defer wg.Done()
-            imgComp := MakeTexture(fp)
-            mu.Lock()
-            textureArr = append(textureArr, imgComp)
+    var prosesFile = make(map[string]bool)
+    for _, entry := range files {
+        fp := filepath.Join(root, entry.Name())
+        mu.Lock()
+        if _, processed := prosesFile[fp]; !processed {
+            prosesFile[fp] = true
             mu.Unlock()
-        }(fp)
-	}
+            wg.Add(1)
+            go func(fp string) {
+                defer wg.Done()
+                imgComp := MakeTexture(fp)
+                mu.Lock()
+                textureArr = append(textureArr, imgComp)
+                mu.Unlock()
+            }(fp)
+        } else {
+            mu.Unlock()
+        }
+    }
     wg.Wait()
+
     file, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-    if err!=nil{
-        fmt.Println("tess")
+    if err != nil {
+        fmt.Println("Error opening file:", err)
         return
     }
     defer file.Close()
-    encoder := json.NewEncoder(file)
 
+    encoder := json.NewEncoder(file)
     err = encoder.Encode(textureArr)
-    if err!=nil{
-        fmt.Println("tes1")
+    if err != nil {
+        fmt.Println("Error encoding JSON:", err)
         return
     }
 }
+
 
 func MakeGray(url string)GrayImg{
     var imG GrayImg
