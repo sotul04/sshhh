@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"fmt"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,7 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 	r.POST("/upload-zip", handleZip)
-	r.POST("/search", handleFileUpload)
+	r.POST("/search-color", handleSearchColor)
 	r.POST("/search/texture",handleTexture)
 	r.Run(":8080")
 }
@@ -36,17 +35,17 @@ func handleTexture(c *gin.Context){
 
 	sim,countData := cbir.TextureSimilarity(filename,"../dataset_vector/texture.json")
 	for _,val := range sim{
-		fp := filepath.Join("../../asset",val.URL)
+		fp := filepath.Join("../dataset",val.URL)
 		val.URL = fp
 		val.Similarity *= 100
 	}
 	c.JSON(http.StatusOK,gin.H{
-		"array":sim,
-		"jmlh-data":countData,
+		"length":countData,
+		"data":sim,
 	})
 }
 
-func handleFileUpload(c *gin.Context) {
+func handleSearchColor(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error uploading file"})
@@ -54,7 +53,7 @@ func handleFileUpload(c *gin.Context) {
 	}
 
 	// Generate a unique filename for the uploaded file
-	fileName := fmt.Sprintf("%s%s", filepath.Base(file.Filename), filepath.Ext(file.Filename))
+	fileName := filepath.Base(file.Filename)
 	dst := filepath.Join("../image", fileName)
 
 	if err := c.SaveUploadedFile(file, dst); err != nil {
@@ -62,9 +61,15 @@ func handleFileUpload(c *gin.Context) {
 		return
 	}
 
-	cbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
+	info := cbir.SearchImageColor(dst, "../dataset_vector/color.json", "../result/color_result.json")
+	fmt.Println(len(info))
 
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+	responseData := gin.H{
+		"length": len(info),
+		"data":   info,
+	}
+
+	c.JSON(http.StatusOK, responseData)
 }
 
 func handleZip(c *gin.Context) {
@@ -107,13 +112,13 @@ func handleZip(c *gin.Context) {
 		return
 	}
 
-	err = os.RemoveAll("../assets/")
+	err = os.RemoveAll("../public/dataset")
 	if err != nil {
 		c.JSON(http.StatusAlreadyReported, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = extractFiles("../temp/dataset.zip", "../assets")
+	err = extractFiles("../temp/dataset.zip", "../public/dataset")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -129,8 +134,8 @@ func handleZip(c *gin.Context) {
 	}
 
 	//Ekstraksi Vektor untuk color dari gambar
-	cbir.PreproccessImageColor("../assets", "../dataset_vector/color.json")
-	cbir.MakeJSONDataset("../assets","../dataset_vector/texture.json")
+	cbir.PreproccessImageColor("../public/dataset", "../dataset_vector/color.json")
+	cbir.MakeJSONDataset("../public/dataset","../dataset_vector/texture.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 }

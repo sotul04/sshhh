@@ -92,6 +92,22 @@
     box-shadow: 1px 3px 10px 1px black;
 }
 
+#loading-disable {
+    margin-top: -3px;
+    margin-bottom: 26px;
+    color: white;
+}
+
+.box-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading {
+    cursor: progress;
+}
+
 label {
     font-size: 0.76rem;
 }

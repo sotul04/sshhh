@@ -7,6 +7,7 @@ import Search from './components/home/GridType';
 import TopBar from './components/topbar/TopBar';
 import "./index.css"
 import FileUploadForm from './components/zipping/ZippingFolder';
+import UploadImage from './components/UploadImage';
 
 
 function Home() {

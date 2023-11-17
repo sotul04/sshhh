@@ -22,8 +22,8 @@ type ImgComp struct{
 }
 
 type ImgSim struct{
-    URL string `json:"url"`
-    Similarity float64 `json:"similarity"`
+    URL string `json:"path"`
+    Similarity float64 `json:"percentage"`
 }
 
 type GlcmMatrix struct{
