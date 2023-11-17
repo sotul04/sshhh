@@ -22,7 +22,31 @@ func main() {
 	r.Use(cors.New(config))
 	r.POST("/upload-zip", handleZip)
 	r.POST("/search-color", handleSearchColor)
+	r.POST("/search-texture", handleTexture)
 	r.Run(":8080")
+}
+
+func handleTexture(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to save file on server"})
+		return
+	}
+	filename := filepath.Join("../image", file.Filename)
+	if err := c.SaveUploadedFile(file, filename); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file on server"})
+		return
+	}
+
+	sim, countData := cbir.TextureSimilarity(filename, "../dataset_vector/texture.json")
+	for i := 0; i < countData; i++ {
+		sim[i].URL = "/dataset/" + sim[i].URL
+		sim[i].Similarity *= 100
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"length": countData,
+		"data":   sim,
+	})
 }
 
 func handleSearchColor(c *gin.Context) {
@@ -69,7 +93,7 @@ func handleZip(c *gin.Context) {
 
 	// Generate a unique folder name using UUID
 
-	// Create a folder in assets
+	// Create a folsrc
 	assetsFolderPath := "../temp/"
 	err = os.MkdirAll(assetsFolderPath, 0755)
 	if err != nil {
@@ -77,7 +101,7 @@ func handleZip(c *gin.Context) {
 		return
 	}
 
-	// Save the zip file to the assets folder
+	// Save the zip file src folder
 	zipFilePath := filepath.Join(assetsFolderPath + "dataset.zip")
 	out, err := os.Create(zipFilePath)
 	if err != nil {
@@ -92,13 +116,13 @@ func handleZip(c *gin.Context) {
 		return
 	}
 
-	err = os.RemoveAll("../public/dataset")
+	err = os.RemoveAll("../src/dataset")
 	if err != nil {
 		c.JSON(http.StatusAlreadyReported, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = extractFiles("../temp/dataset.zip", "../public/dataset")
+	err = extractFiles("../temp/dataset.zip", "../src/dataset")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -114,11 +138,14 @@ func handleZip(c *gin.Context) {
 	}
 
 	//Ekstraksi Vektor untuk color dari gambar
-	cbir.PreproccessImageColor("../public/dataset", "../dataset_vector/color.json")
+	cbir.PreproccessImageColor("../src/dataset", "../dataset_vector/color.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 }
 
+// const parPath = "../kontol"
+// nurl = img.jpg
+// ={${basepath}/${url}}
 func extractFiles(zipFilePath, destinationFolder string) error {
 	r, err := zip.OpenReader(zipFilePath)
 	if err != nil {

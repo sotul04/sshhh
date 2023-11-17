@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import JSZip from 'jszip';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
@@ -23,6 +23,7 @@ const FileUploadForm = () => {
       console.error('No files selected.');
       return;
     }
+    setDiffTime(false);
     const startTime = performance.now();
   
     const zip = new JSZip();
@@ -40,12 +41,12 @@ const FileUploadForm = () => {
       const formData = new FormData();
       formData.append('zipFile', content);
   
-      // Use Axios instead of fetch
-      const response = await axios.post('http://localhost:8080/upload-zip', formData);
-  
-      if (!response.data) {
-        throw new Error('Empty response');
-      }
+      const response = await axios.post('http://localhost:8080/upload-zip', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 40000,
+      });
   
       console.log(response.data);
       Swal("Upload Data Set berhasil."); // Handle the response accordingly
@@ -65,36 +66,35 @@ const FileUploadForm = () => {
     }
   };
   
-  
   return (
     <div className='main-dataset'>
       <div className='box-dataset'>
         {!loading && (
-        <div {...getRootProps()} className='box-input' disabled={loading}>
-          <input {...getInputProps()} className='input-dataset' disabled={loading}/>
-          <div>
-            {
-              selectedFiles.length !== 0 ?
-                (<div className='file-exist'>
-                  <div className='chosen-file'>
-                    {selectedFiles.length === 1 ? 
-                    (<p>
-                      {selectedFiles.length} File Chosen
-                    </p>) : (
-                      <p>
-                        {selectedFiles.length} Files Chosen
-                      </p>
-                    )}
+          <div {...getRootProps()} className='box-input' disabled={loading}>
+            <input {...getInputProps()} className='input-dataset' disabled={loading}/>
+            <div>
+              {
+                selectedFiles.length !== 0 ?
+                  (<div className='file-exist'>
+                    <div className='chosen-file'>
+                      {selectedFiles.length === 1 ? 
+                      (<p>
+                        {selectedFiles.length} File Chosen
+                      </p>) : (
+                        <p>
+                          {selectedFiles.length} Files Chosen
+                        </p>
+                      )}
+                    </div>
+                  </div>) :
+                  <div className='no-file'>
+                    <p>Upload Dataset Here</p>
                   </div>
-                </div>) :
-                <div className='no-file'>
-                  <p>Upload Dataset Here</p>
-                </div>
-            }
-          </div>
+              }
+            </div>
           </div>
         )}
-          {selectedFiles.length !== 0 && (
+        {selectedFiles.length !== 0 && (
           <div className='label-upload'>
             <label htmlFor="upload-dataset" className='butn dataset-upload'>
               Upload
@@ -102,28 +102,27 @@ const FileUploadForm = () => {
             <button id="upload-dataset" type="button" onClick={onChangeFile} style={{display: 'none'}}>
             </button>
           </div>
-          )}
-            {loading && (
-              <div className='loading-style'>
-                  <div className='box-input loading'>
-                    <p id="loading-disable">Loading</p>
-                  </div>
-                <div className='typing-animation'>
-                  <div className="dot dot1"></div>
-                  <div className="dot dot2"></div>
-                  <div className="dot dot3"></div>
-                </div>
-              </div>
-            )}
-            {diffTime && (
-              <div>
-                <p>Berhasil diupload dalam waktu {secondTime.toFixed(2)}s.</p>
-              </div>
-            )}
+        )}
+        {loading && (
+          <div className='loading-style'>
+            <div className='box-input loading'>
+              <p id="loading-disable">Loading</p>
+            </div>
+            <div className='typing-animation'>
+              <div className="dot dot1"></div>
+              <div className="dot dot2"></div>
+              <div className="dot dot3"></div>
+            </div>
+          </div>
+        )}
+        {diffTime && (
+          <div>
+            <p>Berhasil diupload dalam waktu {secondTime.toFixed(2)}s.</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
 
 export default FileUploadForm;
