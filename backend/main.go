@@ -17,7 +17,7 @@ func main() {
 	r.Use(cors.Default())
 	r.POST("/upload-zip", handleZip)
 	r.POST("/search-color", handleSearchColor)
-	r.POST("/search/texture",handleTexture)
+	r.POST("/search-texture",handleTexture)
 	r.Run(":8080")
 }
 
