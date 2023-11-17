@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"fmt"
 
@@ -40,7 +41,7 @@ func handleTexture(c *gin.Context) {
 
 	sim, countData := cbir.TextureSimilarity(filename, "../dataset_vector/texture.json")
 	for i := 0; i < countData; i++ {
-		sim[i].URL = "/dataset/" + sim[i].URL
+		sim[i].URL = "dataset/" + sim[i].URL
 		sim[i].Similarity *= 100
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -139,8 +140,45 @@ func handleZip(c *gin.Context) {
 
 	//Ekstraksi Vektor untuk color dari gambar
 	cbir.PreproccessImageColor("../src/dataset", "../dataset_vector/color.json")
+	cbir.MakeJSONDataset("../src/dataset", "../dataset_vector/texture.json")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
+
+	time.Sleep(2 * time.Second)
+	srcDir := "../src/dataset"
+	dstDir := "../public/dataset"
+	err = moveFiles(srcDir, dstDir)
+	if err != nil {
+		fmt.Println("File berhasil dipindahkan.")
+		return
+	}
+}
+
+func moveFiles(sourceDir, destinationDir string) error {
+	err := os.RemoveAll(destinationDir)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := os.Stat(destinationDir); os.IsNotExist(err) {
+		os.MkdirAll(destinationDir, os.ModePerm)
+	}
+	listFile, _ := cbir.ListImageInDir(sourceDir)
+	for _, path := range listFile {
+		base := filepath.Base(path.Name())
+		srcPath := sourceDir + "/" + base
+		dstPath := destinationDir + "/" + base
+		err := os.Rename(srcPath, dstPath)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+	}
+	err = os.RemoveAll(sourceDir)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 // const parPath = "../kontol"
