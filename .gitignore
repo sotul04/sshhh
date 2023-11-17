@@ -10,7 +10,7 @@
 
 # production
 /build
-/public/dataset
+/src/dataset
 
 # dataset
 /assets
