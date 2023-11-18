@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"fmt"
 
@@ -144,7 +143,6 @@ func handleZip(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Zip file uploaded and saved successfully"})
 
-	time.Sleep(2 * time.Second)
 	srcDir := "../src/dataset"
 	dstDir := "../public/dataset"
 	err = moveFiles(srcDir, dstDir)

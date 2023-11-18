@@ -1,5 +1,6 @@
 .main-dataset {
-    margin-top: 20px;
+    margin-top: 50px;
+    margin-bottom: 50px;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
@@ -16,7 +17,7 @@
     align-items: center;
     transition: 1s;
     border-radius: 10px;
-    background-image: linear-gradient(to right, rgb(26, 16, 82), rgb(49, 7, 66), rgb(71, 2, 2));
+    background-image:linear-gradient(to right, rgb(3, 17, 41) 0%, #170b4d 50%, rgb(75, 0, 90) 100%);
     background-size: 200% auto;
     box-shadow: 0px 2px 4px 0px black;
 }
@@ -84,7 +85,7 @@
     color: white;
     border-radius: 10px;
     box-shadow: 0px 2px 4px 0px black;
-    background-image: linear-gradient(to right, rgb(11,43,99) 0%, #4623e0 50%, rgb(91, 2, 109) 100%);
+    background-image: linear-gradient(to right, rgb(3, 17, 41) 0%, #170b4d 50%, rgb(75, 0, 90) 100%);
 }
 
 .butn:hover {
