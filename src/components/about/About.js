@@ -5,16 +5,17 @@ function DisplayBio({ Data }) {
     return (
         <div className='about-photo'>
             <img src={Data.path} alt="Profile"/>
-            <p>{Data.name}</p>
-            <a href={Data.linkto} target="_blank" rel="noopener noreferrer">Click me</a>
+            <h4>{Data.name}</h4>
+            <h5>{Data.nim}</h5>
+            <a href={Data.linkto} target="_blank" rel="noopener noreferrer">More</a>
         </div>
     )
 }
 
 export default function About() {
-    const Kiel = { path: "16.jpg", name: "Ignatius Jhon Hezkiel Chan", linkto: "https://youtube.com" };
-    const Suthasoma = { path: "4.jpg", name: "Suthasoma Mahardhika Munthe", linkto: "https://youtube.com" };
-    const Scifo = { path: "12.jpg", name: "Marvin Scifo Y. Hutahaean", linkto: "https://youtube.com" };
+    const Kiel = { path: "Kiel_0.png", name: "Ignatius Jhon Hezkiel Chan",nim:"13522029", linkto: "https://github.com/chankiel" };
+    const Suthasoma = { path: "Suta_0.png", name: "Suthasoma Mahardhika Munthe", nim: "13522098",linkto: "https://github.com/sotul04" };
+    const Scifo = { path: "Scifo_0.png", name: "Marvin Scifo Y. Hutahaean", nim:"13522110",linkto: "https://github.com/scifo04" };
 
     return (
         <div className='about-box'>

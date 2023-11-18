@@ -1,5 +1,5 @@
 .about-box {
-    height: 65vh;
+    height: 50vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
@@ -28,4 +28,13 @@
     width: 300px;
     height: auto;
     border-radius: 20px;
+}
+
+.about-photo a {
+    transition: 1s;
+    text-decoration: none;
+}
+
+.about-photo a:hover {
+    text-shadow: 1px 1px 6px rgb(168, 115, 115);
 }
