@@ -67,6 +67,7 @@ func MakeJSONDataset(root, dest string) {
         return
     }
 
+    textureArr = textureArr[:0]
     var wg sync.WaitGroup
     var mu sync.Mutex
     var prosesFile = make(map[string]bool)
@@ -117,7 +118,6 @@ func MakeGray(url string)GrayImg{
 
     img, _, err := image.Decode(inputFile)
     if err != nil {
-        fmt.Println("Error decoding image sini:", err)
         return imG
     }
 
